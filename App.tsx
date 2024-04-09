@@ -1,118 +1,80 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, Button, Pressable, Text, View} from 'react-native';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+function App(): React.JSX.Element {
+  const [data, setData] = useState([]);
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  const GetAPIData = async () => {
+    const url = 'https://api.api-ninjas.com/v1/quotes?category=';
+    const APIkey = '9QH2ATe+3PchHaLFoKGEUQ==2IpeTOXd4Pj1jF4r';
+    try {
+      const result = await fetch(url, {
+        method: 'GET',
+        headers: {
+          'X-Api-Key': APIkey,
+        },
+      });
+      const data = await result.json();
+      setData(data);
+      console.log(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  useEffect(() => {
+    GetAPIData();
+  }, []);
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+      <Text style={{fontSize: 30}}>Quote Generator</Text>
+      {data.length > 0 && (
+        <View>
+          <Text
+            style={{
+              fontSize: 26,
+              color: 'black',
+              margin: 10,
+              backgroundColor: 'lightblue',
+              padding: 10,
+              borderRadius: 10,
+            }}>
+            Quote: {data[0].quote}
+          </Text>
+          <Text
+            style={{
+              fontSize: 18,
+              color: 'black',
+              margin: 10,
+              backgroundColor: 'lightblue',
+              padding: 10,
+              borderRadius: 10,
+            }}>
+            Author: {data[0].author}
+          </Text>
+          <Text
+            style={{
+              fontSize: 20,
+              color: 'black',
+              margin: 10,
+              backgroundColor: 'lightblue',
+              padding: 10,
+              borderRadius: 10,
+            }}>
+            Category: {data[0].category}
+          </Text>
+        </View>
+      )}
+      {data.length === 0 && <ActivityIndicator />}
+      <View style={{flex: 1, justifyContent: 'flex-end', alignItems: 'center'}}>
+        <Pressable
+          onPress={GetAPIData}
+          style={{backgroundColor: 'lightblue', padding: 10, borderRadius: 10 , paddingRight: 164, paddingLeft: 164}}>
+          <Text>Get Quote</Text>
+        </Pressable>
+      </View>
     </View>
   );
 }
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
 
 export default App;
